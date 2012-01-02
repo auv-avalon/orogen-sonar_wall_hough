@@ -6,11 +6,11 @@ name "sonar_wall_hough"
 # header, and this header will be loaded here
 # import_types_from "sonar_wall_houghType.hpp"
 import_types_from "base"
-import_types_from "sonarWallHough/Config.hpp"
+import_types_from "sonar_wall_hough/Config.hpp"
 
 # If the component/deployments use data types that are defined in other oroGen
 # projects, these projects should be imported there as well.
-using_library "sonarWallHough"
+using_library "sonar_wall_hough"
 
 # Declare a new task context (i.e., a component)
 #
@@ -20,7 +20,7 @@ task_context "Task" do
    needs_configuration
    # A configuration property (here, a std::string). Its value can be retrieved
    # in the C++ code with # _config_value.get() and _config_value.set(new_value).
-   property "config", "sonarWallHough/Config"
+   property "config", "/sonar_wall_hough/Config"
 
    # An input port, i.e. an object from which the component gets data from
    # other components' outputs

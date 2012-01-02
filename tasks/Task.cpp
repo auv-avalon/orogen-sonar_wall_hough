@@ -37,8 +37,8 @@ bool Task::configureHook()
     if (! TaskBase::configureHook())
         return false;
     
-    sonarWallHough::Config configuration = _config.get();
-    hough = new sonarWallHough::Hough(configuration);
+    sonar_wall_hough::Config configuration = _config.get();
+    hough = new sonar_wall_hough::Hough(configuration);
     
     peaksFrame = new base::samples::frame::Frame(2*configuration.maxDistance, 2*configuration.maxDistance);
     linesFrame = new base::samples::frame::Frame(2*configuration.maxDistance, 2*configuration.maxDistance);
@@ -148,7 +148,7 @@ void Task::makelinesFrame()
 
 void Task::makePeaksFrame()
 {
-  std::vector<sonarWallHough::SonarPeak>* allPeaks = hough->getAllPeaks();
+  std::vector<sonar_wall_hough::SonarPeak>* allPeaks = hough->getAllPeaks();
   for(int i = 0; i < (int)allPeaks->size(); i++)
   {
     int x = peaksFrame->getWidth()/2 + allPeaks->at(i).distance * cos(allPeaks->at(i).alpha.rad);

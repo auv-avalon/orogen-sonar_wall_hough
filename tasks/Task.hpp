@@ -4,7 +4,7 @@
 #define SONAR_WALL_HOUGH_TASK_TASK_HPP
 
 #include "sonar_wall_hough/TaskBase.hpp"
-#include "sonarWallHough/Hough.hpp"
+#include "sonar_wall_hough/Hough.hpp"
 
 namespace sonar_wall_hough {
     class Task : public TaskBase
@@ -19,7 +19,7 @@ namespace sonar_wall_hough {
 	base::samples::frame::Frame* houghspaceFrame;
 	base::samples::frame::Frame* linesFrame;
     protected:
-	sonarWallHough::Hough* hough;
+	sonar_wall_hough::Hough* hough;
 
 
     public:

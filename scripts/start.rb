@@ -33,7 +33,7 @@ Orocos.run "sonar_wall_hough_deployment" do
     hough.start
 
     #open control widget and start replay
-    Vizkit.display sonar.SonarScan
+    #Vizkit.display sonar.SonarScan
     Vizkit.control log
     Vizkit.exec
 end

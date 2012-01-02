@@ -13,5 +13,5 @@
   <depend package="dummy-dependency-n-1" />
   <depend package="dummy-dependency-n" />
   -->
-  <depend package="avalon/sonarWallHough" />
+  <depend package="avalon/sonar_wall_hough" />
 </package>
