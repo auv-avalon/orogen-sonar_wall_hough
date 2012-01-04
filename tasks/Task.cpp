@@ -10,6 +10,8 @@ Task::Task(std::string const& name)
     , peaksFrame(0)
     , houghspaceFrame(0)
     , linesFrame(0)
+    , lastPeakCount(0)
+    , peaksFrameOld(0)
 {
 }
 
@@ -19,6 +21,8 @@ Task::Task(std::string const& name, RTT::ExecutionEngine* engine)
     , peaksFrame(0)
     , houghspaceFrame(0)
     , linesFrame(0)
+    , lastPeakCount(0)
+    , peaksFrameOld(0)
 {
 }
 
@@ -41,6 +45,7 @@ bool Task::configureHook()
     hough = new sonar_wall_hough::Hough(configuration);
     
     peaksFrame = new base::samples::frame::Frame(2*configuration.maxDistance, 2*configuration.maxDistance);
+    peaksFrameOld = new base::samples::frame::Frame(2*configuration.maxDistance, 2*configuration.maxDistance);
     linesFrame = new base::samples::frame::Frame(2*configuration.maxDistance, 2*configuration.maxDistance);
     houghspaceFrame = new base::samples::frame::Frame(hough->getHoughspace()->getWidth(), hough->getHoughspace()->getHeight());
     
@@ -64,62 +69,17 @@ void Task::updateHook()
       hough->registerBeam(sonarBeam);
     }
     
+    //save old peaks image
+    if(lastPeakCount > hough->getAllPeaks()->size())
+    {
+      peaksFrameOld->image.clear();
+      peaksFrameOld->image.insert(peaksFrameOld->image.begin(), peaksFrame->image.begin(), peaksFrame->image.end());
+    }
+    lastPeakCount = hough->getAllPeaks()->size();
+    
+    makeLinesFrame();
     makePeaksFrame();
-    
-    /*bool interpretFirst;
-    if(_reset.read(interpretFirst) == RTT::NewData)
-    {
-      if(interpretFirst)
-	hough->getLines();
-      hough->clearHoughspace();
-    }
-    else
-    {
-      base::samples::SonarBeam sonarBeam;
-      _input.read(sonarBeam);
-      hough->accumulate(sonarBeam);
-    }
-    
-    if(hough->hasNewResults())
-    {
-      base::samples::frame::Frame frame(1200, 1200, 8, base::samples::frame::MODE_GRAYSCALE, 0, 0);
-	
-      int d, x, xPrime, yPrime;
-      double alpha;
-      for(int i = 0; i < hough->getResult().size(); i++)
-      {
-	d = hough->getResult()[i].second;
-	alpha = hough->getResult()[i].first;
-	if(abs(d) < 50)
-	  continue;
-	
-	for(int y = 0; y < frame.getHeight(); y++)
-	{
-	  d = hough->getResult()[i].second;
-	  alpha = hough->getResult()[i].first - (M_PI/2); //0° ist to the right
-	  yPrime = frame.getHeight()/2 - y;
-	  xPrime = (int)((d - yPrime * sin(alpha)) / (cos(alpha)) + 0.5);
-	  x = xPrime + frame.getWidth()/2;
-	  if(x >= 0 && x < frame.getWidth())
-	  {
-	    frame.image[(y*frame.getWidth() + x)] = 255;
-	  }
-	}
-      }
-      _lines.write(frame);
-    }
-    _preprocessed.write(hough->preprocessedBeam);
-    
-    //write houghspace as image
-      base::samples::frame::Frame houghimage(hough->getNumberOfAngles(), 601, 8, base::samples::frame::MODE_GRAYSCALE, 0, 0);
-      for(int d = -300; d <= 300; d++)
-      {
-	for(int alphaIdx = 0; alphaIdx < hough->getNumberOfAngles(); alphaIdx++)
-	{
-	  houghimage.image[hough->getNumberOfAngles()* (d+300) + alphaIdx] = 10 * hough->houghspace[d * hough->getNumberOfAngles() + alphaIdx];
-	}
-      }
-      _houghimage.write(houghimage);*/
+    makeHoughspaceFrame();
 }
 
 // void Task::errorHook()
@@ -138,22 +98,74 @@ void Task::cleanupHook()
 
 void Task::makeHoughspaceFrame()
 {
-
+  std::vector<uint8_t>::iterator imageCenterY = houghspaceFrame->image.begin() + houghspaceFrame->getHeight()/2 * houghspaceFrame->getWidth();
+  for(int y = -houghspaceFrame->getHeight()/2; y <= houghspaceFrame->getHeight()/2; y++)
+  {
+    for(int x = 0; x < houghspaceFrame->getWidth(); x++)
+    {
+      *(imageCenterY + y*houghspaceFrame->getWidth() + x) = *(hough->getHoughspace()->uncheckedAt(x,y)); 
+    }
+  }
+  
+  _houghspace.write(*houghspaceFrame);
 }
 
-void Task::makelinesFrame()
+void Task::makeLinesFrame()
 {
-
+  linesFrame->reset();
+    
+  std::vector<Line>* lines = hough->getActualLines();
+  for(int i = 0; i < (int)lines->size(); i++)
+  {
+    //find end points for line
+    int x0 = linesFrame->getWidth()/2 + lines->at(i).d*cos(lines->at(i).alpha)+linesFrame->getWidth()*sin(lines->at(i).alpha);
+    int y0 = linesFrame->getHeight()/2 - lines->at(i).d*sin(lines->at(i).alpha)+linesFrame->getWidth()*cos(lines->at(i).alpha);
+    int x1 = linesFrame->getWidth()/2 + lines->at(i).d*cos(lines->at(i).alpha)-linesFrame->getWidth()*sin(lines->at(i).alpha);
+    int y1 = linesFrame->getHeight()/2 - lines->at(i).d*sin(lines->at(i).alpha)-linesFrame->getWidth()*cos(lines->at(i).alpha);
+    //std::cout << "x0="<<x0<<", y0="<<y0<<", x1="<<x1<<", y1="<<y1<<std::endl;
+    
+    //bresenham line drawing (mostly taken from Wikipedia)
+    int dx =  abs(x1-x0), sx = x0<x1 ? 1 : -1;
+    int dy = -abs(y1-y0), sy = y0<y1 ? 1 : -1; 
+    int err = dx+dy, e2; /* error value e_xy */
+    
+    for(;;)
+    {
+      if(x0 >= 0 && x0 < linesFrame->getWidth() && y0 >= 0 && y0 < linesFrame->getHeight())
+      {
+	linesFrame->image[y0 * linesFrame->getWidth() + x0] = 255;
+      }
+      if (x0==x1 && y0==y1) break;
+      e2 = 2*err;
+      if (e2 > dy) { err += dy; x0 += sx; } /* e_xy+e_x > 0 */
+      if (e2 < dx) { err += dx; y0 += sy; } /* e_xy+e_y < 0 */
+    }
+  }
+  
+  //copy old peaks on linesFrame
+  for(int i = 0; i < linesFrame->image.size(); i++)
+    linesFrame->image.at(i) = std::max(linesFrame->image.at(i), peaksFrameOld->image.at(i));
+  
+  _lines.write(*linesFrame);
 }
 
 void Task::makePeaksFrame()
 {
+  peaksFrame->reset();
   std::vector<sonar_wall_hough::SonarPeak>* allPeaks = hough->getAllPeaks();
   for(int i = 0; i < (int)allPeaks->size(); i++)
   {
     int x = peaksFrame->getWidth()/2 + allPeaks->at(i).distance * cos(allPeaks->at(i).alpha.rad);
     int y = peaksFrame->getHeight()/2 - allPeaks->at(i).distance * sin(allPeaks->at(i).alpha.rad);
-    peaksFrame->image[y * peaksFrame->getHeight() + x] = 255;
+    peaksFrame->image[y * peaksFrame->getWidth() + x] = 255;
+    //and some around there
+    if(x >= 1 && x < peaksFrame->getWidth()-1 && y >= 1 && y < peaksFrame->getHeight()-1)
+    {
+      peaksFrame->image[(y+0) * peaksFrame->getWidth() + x+1] = 255;
+      peaksFrame->image[(y+0) * peaksFrame->getWidth() + x-1] = 255;
+      peaksFrame->image[(y+1) * peaksFrame->getWidth() + x+0] = 255;
+      peaksFrame->image[(y-1) * peaksFrame->getWidth() + x+0] = 255;
+    }
   }
   _peaks.write(*peaksFrame);
 }
