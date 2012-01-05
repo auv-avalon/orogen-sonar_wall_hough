@@ -133,7 +133,7 @@ void Task::makeLinesFrame()
     {
       if(x0 >= 0 && x0 < linesFrame->getWidth() && y0 >= 0 && y0 < linesFrame->getHeight())
       {
-	linesFrame->image[y0 * linesFrame->getWidth() + x0] = 255;
+	linesFrame->image[y0 * linesFrame->getWidth() + x0] = lines->at(i).votes;
       }
       if (x0==x1 && y0==y1) break;
       e2 = 2*err;
