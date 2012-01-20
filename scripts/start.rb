@@ -14,8 +14,9 @@ log = Orocos::Log::Replay.open("~/work/logdaten/slam/sonar.19.log")
 #log.task_name.port_name
 
 #start deployment
-Orocos.run 'sonar_wall_hough_deployment', 'sonar_feature_estimator' do 
-    feature_estimator = Orocos::TaskContext.get 'sonar_feature_estimator'
+#Orocos.run 'sonar_wall_hough_deployment', 'sonar_feature_estimator' do
+Orocos.run 'sonar_wall_hough_deployment' do 
+    #feature_estimator = Orocos::TaskContext.get 'sonar_feature_estimator'
     #feature_estimator.proportional_value_threshold = 0.2
     
     hough = Orocos::TaskContext.get 'sonar_wall_hough'
@@ -30,9 +31,9 @@ Orocos.run 'sonar_wall_hough_deployment', 'sonar_feature_estimator' do
     
     sonar = log.task 'sonar'
     #sonar.BaseScan.connect_to feature_estimator.sonar_input
-    sonar.SonarScan.connect_to feature_estimator.sonar_input
-    feature_estimator.filtered_sonarbeam.connect_to hough.input
-    #sonar.SonarScan.connect_to hough.input
+    #sonar.SonarScan.connect_to feature_estimator.sonar_input
+    #feature_estimator.filtered_sonarbeam.connect_to hough.input
+    sonar.SonarScan.connect_to hough.input
     
     Vizkit.display hough.peaks
     Vizkit.display hough.houghspace
