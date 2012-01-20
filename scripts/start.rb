@@ -6,15 +6,15 @@ Orocos.initialize
 
 
 #load log file 
-log = Orocos::Log::Replay.open("~/work/logdaten/slam/sonar.19.log")
-#log = Orocos::Log::Replay.open("~/work/logdaten/sauc-e_first_day/20110704-1551/sonar.0.0.log")
+#log = Orocos::Log::Replay.open("~/work/logdaten/slam/sonar.19.log")
+log = Orocos::Log::Replay.open("~/work/logdaten/sauc-e_first_day/20110704-1551/sonar.0.0.log")
 
 #now you can access all logged data by 
 #addressing them by their task and port name
 #log.task_name.port_name
 
 #start deployment
-Orocos.run 'sonar_wall_hough_deployment', 'sonar_feature_estimator' do 
+Orocos.run 'sonar_wall_hough_deployment', 'sonar_feature_estimator' do
     feature_estimator = Orocos::TaskContext.get 'sonar_feature_estimator'
     #feature_estimator.proportional_value_threshold = 0.2
     
@@ -24,14 +24,14 @@ Orocos.run 'sonar_wall_hough_deployment', 'sonar_feature_estimator' do
 	c.anglesPerBin = 2
 	c.maxDistance = 600
 	c.distancesPerBin = 4
-	c.minLineVotes = 20
+	c.minLineVotes = 60
     end    
     hough.configure
     
     sonar = log.task 'sonar'
-    #sonar.BaseScan.connect_to feature_estimator.sonar_input
-    sonar.SonarScan.connect_to feature_estimator.sonar_input
-    feature_estimator.filtered_sonarbeam.connect_to hough.input
+    sonar.BaseScan.connect_to hough.input
+    #sonar.SonarScan.connect_to feature_estimator.sonar_input
+    #feature_estimator.filtered_sonarbeam.connect_to hough.input
     #sonar.SonarScan.connect_to hough.input
     
     Vizkit.display hough.peaks

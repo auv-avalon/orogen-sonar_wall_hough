@@ -1,6 +1,7 @@
 /* Generated from orogen/lib/orogen/templates/tasks/Task.cpp */
 
 #include "Task.hpp"
+#include <time.h>
 
 using namespace sonar_wall_hough;
 
@@ -48,6 +49,7 @@ bool Task::configureHook()
     peaksFrameOld = new base::samples::frame::Frame(2*configuration.maxDistance, 2*configuration.maxDistance);
     linesFrame = new base::samples::frame::Frame(2*configuration.maxDistance, 2*configuration.maxDistance);
     houghspaceFrame = new base::samples::frame::Frame(hough->getHoughspace()->getWidth(), hough->getHoughspace()->getHeight());
+    testFrame = new base::samples::frame::Frame(600,200);
     
     return true;
 }
@@ -67,6 +69,13 @@ void Task::updateHook()
     if(_input.read(sonarBeam) == RTT::NewData)
     {
       hough->registerBeam(sonarBeam);
+      /*int y = ((int)(sonarBeam.bearing.getDeg()/1.8))%200;
+      if( y < 0) y+= 200;
+      for(int i = 0; i < 600; i++)
+      {
+	testFrame->image[y * 600 + i] = sonarBeam.beam[i];
+      }
+      _houghspace.write(*testFrame);*/
     }
     
     //save old peaks image
@@ -77,9 +86,9 @@ void Task::updateHook()
     }
     lastPeakCount = hough->getAllPeaks()->size();
     
-    makeLinesFrame();
+    //makeLinesFrame();
     makePeaksFrame();
-    makeHoughspaceFrame();
+    //makeHoughspaceFrame();
 }
 
 // void Task::errorHook()
@@ -155,17 +164,25 @@ void Task::makePeaksFrame()
   std::vector<sonar_wall_hough::SonarPeak>* allPeaks = hough->getAllPeaks();
   for(int i = 0; i < (int)allPeaks->size(); i++)
   {
+    int value = 10 * allPeaks->at(i).strength;
     int x = peaksFrame->getWidth()/2 + allPeaks->at(i).distance * cos(allPeaks->at(i).alpha.rad);
     int y = peaksFrame->getHeight()/2 - allPeaks->at(i).distance * sin(allPeaks->at(i).alpha.rad);
-    peaksFrame->image[y * peaksFrame->getWidth() + x] = 255;
+    peaksFrame->image[y * peaksFrame->getWidth() + x] = value;
     //and some around there
     if(x >= 1 && x < peaksFrame->getWidth()-1 && y >= 1 && y < peaksFrame->getHeight()-1)
     {
-      peaksFrame->image[(y+0) * peaksFrame->getWidth() + x+1] = 255;
-      peaksFrame->image[(y+0) * peaksFrame->getWidth() + x-1] = 255;
-      peaksFrame->image[(y+1) * peaksFrame->getWidth() + x+0] = 255;
-      peaksFrame->image[(y-1) * peaksFrame->getWidth() + x+0] = 255;
+      peaksFrame->image[(y+0) * peaksFrame->getWidth() + x+1] = value;
+      peaksFrame->image[(y+0) * peaksFrame->getWidth() + x-1] = value;
+      peaksFrame->image[(y+1) * peaksFrame->getWidth() + x+0] = value;
+      peaksFrame->image[(y-1) * peaksFrame->getWidth() + x+0] = value;
     }
+    
+    //TESTFRAME
+    int y2 = ((int)(allPeaks->at(i).alpha.getDeg()/1.8))%200;
+    if( y2 < 0) y2+= 200;
+    testFrame->image[y2 * 600 + allPeaks->at(i).distance] = allPeaks->at(i).strength;
+    
   }
   _peaks.write(*peaksFrame);
+  _houghspace.write(*testFrame);
 }

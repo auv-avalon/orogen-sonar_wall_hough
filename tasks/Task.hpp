@@ -20,6 +20,7 @@ namespace sonar_wall_hough {
 	int lastPeakCount;
 	base::samples::frame::Frame* houghspaceFrame;
 	base::samples::frame::Frame* linesFrame;
+	base::samples::frame::Frame* testFrame;
     protected:
 	sonar_wall_hough::Hough* hough;
 
