@@ -63,6 +63,12 @@ void Task::updateHook()
 {
     TaskBase::updateHook();
     
+    base::samples::RigidBodyState rbs;
+    if(_orientation.read(rbs) == RTT::NewData)
+    {
+      hough->setOrientation(rbs.getYaw());
+    }
+    
     base::samples::SonarBeam sonarBeam;
     if(_input.read(sonarBeam) == RTT::NewData)
     {
@@ -115,6 +121,7 @@ void Task::makeLinesFrame()
   linesFrame->reset();
     
   std::vector<Line>* lines = hough->getActualLines();
+  
   for(int i = 0; i < (int)lines->size(); i++)
   {
     //find end points for line
@@ -133,7 +140,7 @@ void Task::makeLinesFrame()
     {
       if(x0 >= 0 && x0 < linesFrame->getWidth() && y0 >= 0 && y0 < linesFrame->getHeight())
       {
-	linesFrame->image[y0 * linesFrame->getWidth() + x0] = lines->at(i).votes;
+	linesFrame->image[y0 * linesFrame->getWidth() + x0] = 255;//lines->at(i).votes;
       }
       if (x0==x1 && y0==y1) break;
       e2 = 2*err;

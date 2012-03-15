@@ -30,6 +30,7 @@ task_context "Task" do
    # input is connected to an output or not.
    input_port "input", "/base/samples/SonarBeam"
    input_port "reset", "bool"
+   input_port "orientation", "/base/samples/RigidBodyState"
 
    # An output port, i.e. an object to which the component pushes data so that
    # it is transmitted to other components' inputs
@@ -51,7 +52,7 @@ end
 deployment "sonar_wall_hough_deployment" do
     # This is a test deployment that should not be installed
     #do_not_install
-
     task("sonar_wall_hough", "Task")
+    add_default_logger
 end
 
