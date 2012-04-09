@@ -15,6 +15,7 @@ namespace sonar_wall_hough {
 	void makePeaksFrame();
 	void makeHoughspaceFrame();
 	void makeLinesFrame();
+	void drawLine(base::samples::frame::Frame* frame, int x0, int y0, int x1, int y1);
 	base::samples::frame::Frame* peaksFrame;
 	base::samples::frame::Frame* peaksFrameOld;
 	int lastPeakCount;

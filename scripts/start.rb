@@ -25,9 +25,12 @@ Orocos.run 'sonar_wall_hough_deployment' do
 	c.filterThreshold = 50
 	c.anglesPerBin = 2
 	c.maxDistance = 600
+	c.minDistance = 2.5
 	c.distancesPerBin = 4
 	c.minLineVotesRatio = 0.05
-	c.basinAngle = 106.6
+	c.angleDelta = 220.0 #the angle between orientation-zero and basin zero (in degree)
+	c.basinHeight = 60.0
+	c.basinWidth = 50.0
     end    
     hough.configure
     

@@ -80,10 +80,10 @@ void Task::updateHook()
     {
       peaksFrameOld->image.clear();
       peaksFrameOld->image.insert(peaksFrameOld->image.begin(), peaksFrame->image.begin(), peaksFrame->image.end());
+      makeLinesFrame();
     }
     lastPeakCount = hough->getAllPeaks()->size();
     
-    makeLinesFrame();
     makePeaksFrame();
     makeHoughspaceFrame();
 }
@@ -122,38 +122,52 @@ void Task::makeLinesFrame()
     
   std::vector<Line>* lines = hough->getActualLines();
   
+  int centerX = linesFrame->getWidth()/2;
+  int centerY = linesFrame->getHeight()/2;
+  
   for(int i = 0; i < (int)lines->size(); i++)
   {
     //find end points for line
-    int x0 = linesFrame->getWidth()/2 + lines->at(i).d*cos(lines->at(i).alpha)+linesFrame->getWidth()*sin(lines->at(i).alpha);
-    int y0 = linesFrame->getHeight()/2 - lines->at(i).d*sin(lines->at(i).alpha)+linesFrame->getWidth()*cos(lines->at(i).alpha);
-    int x1 = linesFrame->getWidth()/2 + lines->at(i).d*cos(lines->at(i).alpha)-linesFrame->getWidth()*sin(lines->at(i).alpha);
-    int y1 = linesFrame->getHeight()/2 - lines->at(i).d*sin(lines->at(i).alpha)-linesFrame->getWidth()*cos(lines->at(i).alpha);
+    int x0 = centerX + lines->at(i).d*cos(lines->at(i).alpha)+linesFrame->getWidth()*sin(lines->at(i).alpha);
+    int y0 = centerY - lines->at(i).d*sin(lines->at(i).alpha)+linesFrame->getWidth()*cos(lines->at(i).alpha);
+    int x1 = centerX + lines->at(i).d*cos(lines->at(i).alpha)-linesFrame->getWidth()*sin(lines->at(i).alpha);
+    int y1 = centerY - lines->at(i).d*sin(lines->at(i).alpha)-linesFrame->getWidth()*cos(lines->at(i).alpha);
     //std::cout << "x0="<<x0<<", y0="<<y0<<", x1="<<x1<<", y1="<<y1<<std::endl;
     
-    //bresenham line drawing (mostly taken from Wikipedia)
-    int dx =  abs(x1-x0), sx = x0<x1 ? 1 : -1;
-    int dy = -abs(y1-y0), sy = y0<y1 ? 1 : -1; 
-    int err = dx+dy, e2; /* error value e_xy */
-    
-    for(;;)
-    {
-      if(x0 >= 0 && x0 < linesFrame->getWidth() && y0 >= 0 && y0 < linesFrame->getHeight())
-      {
-	linesFrame->image[y0 * linesFrame->getWidth() + x0] = 255;//lines->at(i).votes;
-      }
-      if (x0==x1 && y0==y1) break;
-      e2 = 2*err;
-      if (e2 > dy) { err += dy; x0 += sx; } /* e_xy+e_x > 0 */
-      if (e2 < dx) { err += dx; y0 += sy; } /* e_xy+e_y < 0 */
-    }
+    drawLine(linesFrame, x0, y0, x1, y1);
   }
+  
+  
+  //draw x and y axis
+  drawLine(linesFrame, centerX, centerY, centerX+30*cos(hough->getOrientation().getRad()), centerY+30*sin(hough->getOrientation().getRad())); //x-axis
+  //drawLine(linesFrame, centerX, centerY, centerX+30*cos(hough->getOrientation().getRad()+M_PI/2), centerY+30*sin(hough->getOrientation().getRad()+M_PI/2)); //y-axis
+  std::cout << "orientation was " << hough->getOrientation() << std::endl;
   
   //copy old peaks on linesFrame
   for(int i = 0; i < linesFrame->image.size(); i++)
     linesFrame->image.at(i) = std::max(linesFrame->image.at(i), peaksFrameOld->image.at(i));
   
   _lines.write(*linesFrame);
+}
+
+void Task::drawLine(base::samples::frame::Frame* frame, int x0, int y0, int x1, int y1)
+{
+  //bresenham line drawing (mostly taken from Wikipedia)
+    int dx =  abs(x1-x0), sx = x0<x1 ? 1 : -1;
+    int dy = -abs(y1-y0), sy = y0<y1 ? 1 : -1; 
+    int err = dx+dy, e2; /* error value e_xy */
+    
+    for(;;)
+    {
+      if(x0 >= 0 && x0 < frame->getWidth() && y0 >= 0 && y0 < frame->getHeight())
+      {
+	frame->image[y0 * frame->getWidth() + x0] = 255;//lines->at(i).votes;
+      }
+      if (x0==x1 && y0==y1) break;
+      e2 = 2*err;
+      if (e2 > dy) { err += dy; x0 += sx; } /* e_xy+e_x > 0 */
+      if (e2 < dx) { err += dx; y0 += sy; } /* e_xy+e_y < 0 */
+    }
 }
 
 void Task::makePeaksFrame()
