@@ -40,6 +40,7 @@ task_context "Task" do
    output_port "lines", "/base/samples/frame/Frame"
    output_port "peaks", "/base/samples/frame/Frame"
    output_port "houghspace", "/base/samples/frame/Frame"
+   output_port "position", "/base/samples/RigidBodyState"
 
    # If you want that component's updateHook() to be executed when the "input"
    # port gets data, uncomment this

@@ -86,6 +86,15 @@ void Task::updateHook()
     
     makePeaksFrame();
     makeHoughspaceFrame();
+    
+    //write position to output port
+    base::samples::RigidBodyState rbs_out(rbs);
+    base::Pose pose = rbs_out.getPose();
+    std::pair<double,double> xyPos = hough->getActualPosition();
+    pose.position(0,0) = xyPos.first;
+    pose.position(1,0) = xyPos.second;
+    rbs_out.setPose(pose);
+    _position.write(rbs_out);
 }
 
 // void Task::errorHook()

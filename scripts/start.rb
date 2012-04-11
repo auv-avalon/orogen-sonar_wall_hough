@@ -27,7 +27,7 @@ Orocos.run 'sonar_wall_hough_deployment' do
 	c.maxDistance = 600
 	c.minDistance = 2.5
 	c.distancesPerBin = 4
-	c.minLineVotesRatio = 0.05
+	c.minLineVotesRatio = 0.1
 	c.angleDelta = 220.0 #the angle between orientation-zero and basin zero (in degree)
 	c.basinHeight = 60.0
 	c.basinWidth = 50.0
@@ -46,6 +46,10 @@ Orocos.run 'sonar_wall_hough_deployment' do
     Vizkit.display hough.peaks
     Vizkit.display hough.houghspace
     Vizkit.display hough.lines
+    
+    viewer = Vizkit.default_loader.StructViewer
+    hough.position.connect_to viewer
+    viewer.show
     
     #feature_estimator.start
     hough.start
