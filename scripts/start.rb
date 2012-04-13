@@ -20,18 +20,6 @@ Orocos.run 'sonar_wall_hough_deployment' do
     #feature_estimator.proportional_value_threshold = 0.2
     
     hough = Orocos::TaskContext.get 'sonar_wall_hough'
-    hough.config do |c|
-	c.sensorAngularResolution = 1.8
-	c.filterThreshold = 50
-	c.anglesPerBin = 2
-	c.maxDistance = 600
-	c.minDistance = 2.5
-	c.distancesPerBin = 4
-	c.minLineVotesRatio = 0.1
-	c.angleDelta = 220.0 #the angle between orientation-zero and basin zero (in degree)
-	c.basinHeight = 60.0
-	c.basinWidth = 50.0
-    end    
     hough.configure
     
     sonar = log.task 'sonar'

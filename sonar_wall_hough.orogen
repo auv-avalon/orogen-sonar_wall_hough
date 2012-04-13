@@ -20,7 +20,27 @@ task_context "Task" do
    needs_configuration
    # A configuration property (here, a std::string). Its value can be retrieved
    # in the C++ code with # _config_value.get() and _config_value.set(new_value).
-   property "config", "/sonar_wall_hough/Config"
+
+   property("sensorAngularResolution", 'double', 1.8).
+       doc("bla")
+   property("anglesPerBin", 'int', 2).
+       doc("bla")
+   property("maxDistance", 'int', 600).
+       doc("bla")
+   property("filterThreshold", 'int', 50).
+       doc("bla")
+   property("minDistance", 'double', 2.5).
+       doc("bla")
+   property("distancesPerBin", 'int', 4).
+       doc("bla")
+   property("minLineVotesRatio", 'double', 0.1).
+       doc("bla")
+   property("angleDelta", 'double', 220.0).
+       doc("the angle between orientation-zero and basin zero (in degree)")
+   property("basinHeight", 'double', 60.0).
+       doc("bla")
+   property("basinWidth", 'double', 50.0).
+       doc("bla")
 
    # An input port, i.e. an object from which the component gets data from
    # other components' outputs

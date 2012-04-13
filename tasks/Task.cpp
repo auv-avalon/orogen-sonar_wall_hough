@@ -41,7 +41,20 @@ bool Task::configureHook()
     if (! TaskBase::configureHook())
         return false;
     
-    sonar_wall_hough::Config configuration = _config.get();
+    sonar_wall_hough::Config configuration;
+    configuration.angleDelta = _angleDelta.get();
+    configuration.anglesPerBin = _anglesPerBin.get();
+    configuration.basinHeight = _basinHeight.get();
+    configuration.basinWidth = _basinWidth.get();
+    configuration.distancesPerBin = _distancesPerBin.get();
+    configuration.filterThreshold = _filterThreshold.get();
+    configuration.maxDistance = _maxDistance.get();
+    configuration.minDistance = _minDistance.get();
+    configuration.minLineVotesRatio = _minLineVotesRatio.get();
+    configuration.sensorAngularResolution = _sensorAngularResolution.get();
+    
+    std::cout << "angleDelta = " << configuration.angleDelta << std::endl;
+    
     hough = new sonar_wall_hough::Hough(configuration);
     
     peaksFrame = new base::samples::frame::Frame(2*configuration.maxDistance, 2*configuration.maxDistance);
