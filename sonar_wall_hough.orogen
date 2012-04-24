@@ -22,25 +22,25 @@ task_context "Task" do
    # in the C++ code with # _config_value.get() and _config_value.set(new_value).
 
    property("sensorAngularResolution", 'double', 1.8).
-       doc("bla")
+       doc("Angular resolution of sonar (in degree)")
    property("anglesPerBin", 'int', 2).
-       doc("bla")
+       doc("Number of Angle steps collected in 1 bin in houghspace")
    property("maxDistance", 'int', 600).
-       doc("bla")
+       doc("Number of bins of the sonar")
    property("filterThreshold", 'int', 50).
-       doc("bla")
+       doc("bins in sonar beam with fewer entries will be ignored")
    property("minDistance", 'double', 2.5).
-       doc("bla")
+       doc("Minimum distance for sonar to filter out the auv itself")
    property("distancesPerBin", 'int', 4).
-       doc("bla")
+       doc("Number of distance bin in sonar beam collected in 1 bin in houghspace")
    property("minLineVotesRatio", 'double', 0.1).
-       doc("bla")
+       doc("Factor for sonar peaks; lines must have at least that many votes to be detected as lines")
    property("angleDelta", 'double', 220.0).
        doc("the angle between orientation-zero and basin zero (in degree)")
    property("basinHeight", 'double', 60.0).
-       doc("bla")
+       doc("Height of the basin")
    property("basinWidth", 'double', 50.0).
-       doc("bla")
+       doc("Width of the basin")
 
    # An input port, i.e. an object from which the component gets data from
    # other components' outputs
