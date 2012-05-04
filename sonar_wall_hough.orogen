@@ -7,6 +7,8 @@ name "sonar_wall_hough"
 # import_types_from "sonar_wall_houghType.hpp"
 import_types_from "base"
 import_types_from "sonar_wall_hough/Config.hpp"
+import_types_from "uw_localization/types/particle.hpp"
+import_types_from "uw_localization/types/map.hpp"
 
 # If the component/deployments use data types that are defined in other oroGen
 # projects, these projects should be imported there as well.
@@ -25,21 +27,23 @@ task_context "Task" do
        doc("Angular resolution of sonar (in degree)")
    property("anglesPerBin", 'int', 2).
        doc("Number of Angle steps collected in 1 bin in houghspace")
-   property("maxDistance", 'int', 600).
+   property("maxDistance", 'int', 500). #600 for sauc-e logs
        doc("Number of bins of the sonar")
    property("filterThreshold", 'int', 50).
        doc("bins in sonar beam with fewer entries will be ignored")
+   property("withMinimumFilter", 'bool', false). #true for sauc-e logs
+       doc("If the incoming beams should be filtered with a minimum filter first")
    property("minDistance", 'double', 2.5).
        doc("Minimum distance for sonar to filter out the auv itself")
    property("distancesPerBin", 'int', 4).
        doc("Number of distance bin in sonar beam collected in 1 bin in houghspace")
    property("minLineVotesRatio", 'double', 0.1).
        doc("Factor for sonar peaks; lines must have at least that many votes to be detected as lines")
-   property("angleDelta", 'double', 220.0).
+   property("angleDelta", 'double', 50.0). #220.0 for sauc-e logs
        doc("the angle between orientation-zero and basin zero (in degree)")
-   property("basinHeight", 'double', 60.0).
+   property("basinHeight", 'double', 9.0). #60.0 for sauc-e logs
        doc("Height of the basin")
-   property("basinWidth", 'double', 50.0).
+   property("basinWidth", 'double', 16.0). #50.0 for sauc-e logs
        doc("Width of the basin")
 
    # An input port, i.e. an object from which the component gets data from
@@ -57,6 +61,11 @@ task_context "Task" do
    #
    # Data can be written using _output.write(value). _output.connected() returns
    # if this output is connected to an input or not.
+   output_port("map_wall_lines", "/std/vector</uw_localization/Linemark>").
+        doc("current wall features from the using map")
+   output_port("ppeaks", "/base/samples/LaserScan").
+        doc("Sonar Peaks")
+
    output_port "lines", "/base/samples/frame/Frame"
    output_port "peaks", "/base/samples/frame/Frame"
    output_port "houghspace", "/base/samples/frame/Frame"

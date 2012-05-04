@@ -31,15 +31,20 @@ Orocos.run 'sonar_wall_hough_deployment' do
     sonar.BaseScan.connect_to hough.input
     compass.orientation_samples.connect_to hough.orientation
     
-    #view3d = Vizkit.default_loader.create_widget 'vizkit::Vizkit3DWidget'
-    #peaks = view3d.createPlugin("PointCloudVisualization")
-    #walls = view3d.createPlugin("uw_localization_mixedmap", "MixedMapVisualization")
-    #view3d.show
+    view3d = Vizkit.default_loader.create_widget 'vizkit::Vizkit3DWidget'
+    sonar = view3d.createPlugin("uw_localization_particle", "ParticleVisualization")
+    walls = view3d.createPlugin("uw_localization_mapfeature", "MapFeatureVisualization")
+    view3d.show
     
-    #Vizkit.connect_port_to 'sonar_wall_hough', 'pointcloud', :type => :buffer, :size => 100, :pull => false, :update_frequency => 33 do |sample, _|
-    #    peaks.updateParticles(sample)
-    #    sample
-    #end
+    Vizkit.connect_port_to 'sonar_wall_hough', 'map_wall_lines', :type => :buffer, :size => 100, :pull => false, :update_frequency => 33 do |sample, _|
+        walls.updateLinemarks(sample)
+        sample
+    end
+    
+    Vizkit.connect_port_to 'uw_particle_localization', 'ppeaks', :type => :buffer, :size => 100, :pull => false, :update_frequency => 33 do |sample, _|
+        sonar.updateParticles(sample)
+        sample
+    end
     
     Vizkit.display hough.peaks
     Vizkit.display hough.houghspace

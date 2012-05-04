@@ -5,6 +5,7 @@
 
 #include "sonar_wall_hough/TaskBase.hpp"
 #include "sonar_wall_hough/Hough.hpp"
+#include "uw_localization/types/map.hpp"
 
 namespace sonar_wall_hough {
     class Task : public TaskBase
@@ -21,6 +22,7 @@ namespace sonar_wall_hough {
 	int lastPeakCount;
 	base::samples::frame::Frame* houghspaceFrame;
 	base::samples::frame::Frame* linesFrame;
+	std::vector<uw_localization::Linemark> lineMarks;
     protected:
 	sonar_wall_hough::Hough* hough;
 
