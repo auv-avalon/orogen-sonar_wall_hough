@@ -14,4 +14,5 @@
   <depend package="dummy-dependency-n" />
   -->
   <depend package="avalon/sonar_wall_hough" />
+  <depend package="avalon/uw_localization" />
 </package>
