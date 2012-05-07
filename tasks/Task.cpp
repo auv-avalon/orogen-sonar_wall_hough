@@ -53,8 +53,9 @@ bool Task::configureHook()
     configuration.minDistance = _minDistance.get();
     configuration.minLineVotesRatio = _minLineVotesRatio.get();
     configuration.sensorAngularResolution = _sensorAngularResolution.get();
+    configuration.gain = _gain.get();
     
-    std::cout << "angleDelta = " << configuration.angleDelta << std::endl;
+    //std::cout << "angleDelta = " << configuration.angleDelta << std::endl;
     
     hough = new sonar_wall_hough::Hough(configuration);
     
