@@ -44,6 +44,8 @@ task_context "Task" do
        doc("Height of the basin")
    property("basinWidth", 'double', 16.0). #50.0 for sauc-e logs
        doc("Width of the basin")
+   property("gain", 'int', 5). #10 for sauc-e logs
+       doc("How much do the sonar peaks accumulate the hough space")
 
    # An input port, i.e. an object from which the component gets data from
    # other components' outputs
