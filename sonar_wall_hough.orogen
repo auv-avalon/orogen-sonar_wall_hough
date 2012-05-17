@@ -27,11 +27,11 @@ task_context "Task" do
        doc("Angular resolution of sonar (in degree)")
    property("anglesPerBin", 'int', 2).
        doc("Number of Angle steps collected in 1 bin in houghspace")
-   property("maxDistance", 'int', 500). #600 for sauc-e logs
+   property("maxDistance", 'int', 600). #600 for sauc-e logs
        doc("Number of bins of the sonar")
    property("filterThreshold", 'int', 50).
        doc("bins in sonar beam with fewer entries will be ignored")
-   property("withMinimumFilter", 'bool', false). #true for sauc-e logs
+   property("withMinimumFilter", 'bool', true). #true for sauc-e logs
        doc("If the incoming beams should be filtered with a minimum filter first")
    property("minDistance", 'double', 2.5).
        doc("Minimum distance for sonar to filter out the auv itself")
@@ -39,13 +39,13 @@ task_context "Task" do
        doc("Number of distance bin in sonar beam collected in 1 bin in houghspace")
    property("minLineVotesRatio", 'double', 0.1).
        doc("Factor for sonar peaks; lines must have at least that many votes to be detected as lines")
-   property("angleDelta", 'double', 50.0). #220.0 for sauc-e logs
+   property("angleDelta", 'double', 220.0). #220.0 for sauc-e logs
        doc("the angle between orientation-zero and basin zero (in degree)")
-   property("basinHeight", 'double', 9.0). #60.0 for sauc-e logs
+   property("basinHeight", 'double', 60.0). #60.0 for sauc-e logs
        doc("Height of the basin")
-   property("basinWidth", 'double', 16.0). #50.0 for sauc-e logs
+   property("basinWidth", 'double', 50.0). #50.0 for sauc-e logs
        doc("Width of the basin")
-   property("gain", 'int', 5). #10 for sauc-e logs
+   property("gain", 'int', 10). #10 for sauc-e logs
        doc("How much do the sonar peaks accumulate the hough space")
 
    # An input port, i.e. an object from which the component gets data from

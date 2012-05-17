@@ -76,6 +76,7 @@ bool Task::startHook()
 
 void Task::updateHook()
 {
+    //std::cout << "size= " << (hough->getAllPeaks()->size()) << std::endl;
     TaskBase::updateHook();
     
     base::samples::RigidBodyState rbs;
@@ -89,7 +90,7 @@ void Task::updateHook()
     {
       hough->registerBeam(sonarBeam);
     }
-    
+        
     //save old peaks image
     if(lastPeakCount > hough->getAllPeaks()->size())
     {
