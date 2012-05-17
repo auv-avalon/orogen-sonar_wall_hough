@@ -7,7 +7,7 @@ name "sonar_wall_hough"
 # import_types_from "sonar_wall_houghType.hpp"
 import_types_from "base"
 import_types_from "sonar_wall_hough/Config.hpp"
-import_types_from "uw_localization/types/map.hpp"
+#import_types_from "uw_localization/types/map.hpp"
 
 # If the component/deployments use data types that are defined in other oroGen
 # projects, these projects should be imported there as well.
@@ -62,10 +62,10 @@ task_context "Task" do
    #
    # Data can be written using _output.write(value). _output.connected() returns
    # if this output is connected to an input or not.
-   output_port("map_wall_lines", "/std/vector</uw_localization/Linemark>").
-        doc("current wall features from the using map")
-   output_port("ppeaks", "/base/samples/LaserScan").
-        doc("Sonar Peaks")
+#   output_port("map_wall_lines", "/std/vector</uw_localization/Linemark>").
+#        doc("current wall features from the using map")
+#   output_port("ppeaks", "/base/samples/LaserScan").
+#        doc("Sonar Peaks")
 
    output_port "lines", "/base/samples/frame/Frame"
    output_port "peaks", "/base/samples/frame/Frame"

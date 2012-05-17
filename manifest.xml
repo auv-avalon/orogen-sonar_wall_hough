@@ -13,7 +13,6 @@
   <depend package="dummy-dependency-n-1" />
   <depend package="dummy-dependency-n" />
   -->
-  <depend package="avalon/orogen/uw_particle_localization" />
+<!--  <depend package="avalon/uw_localization" /> -->
   <depend package="avalon/sonar_wall_hough" />
-  <depend package="avalon/uw_localization" />
 </package>

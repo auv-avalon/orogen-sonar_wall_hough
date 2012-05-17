@@ -179,7 +179,7 @@ void Task::makeLinesFrame()
   lineMarks.push_back(lm2);
   lineMarks.push_back(lm3);
   
-  _map_wall_lines.write(lineMarks);
+  //_map_wall_lines.write(lineMarks);
   
   //make frame
   int centerX = linesFrame->getWidth()/2;
