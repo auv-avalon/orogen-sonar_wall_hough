@@ -7,7 +7,7 @@ name "sonar_wall_hough"
 # import_types_from "sonar_wall_houghType.hpp"
 import_types_from "base"
 import_types_from "sonar_wall_hough/Config.hpp"
-#import_types_from "uw_localization/types/map.hpp"
+import_types_from "uw_localization/types/map.hpp"
 
 # If the component/deployments use data types that are defined in other oroGen
 # projects, these projects should be imported there as well.
