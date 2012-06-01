@@ -5,7 +5,7 @@
 
 #include "sonar_wall_hough/TaskBase.hpp"
 #include "sonar_wall_hough/Hough.hpp"
-//#include "uw_localization/types/map.hpp"
+#include "uw_localization/types/map.hpp"
 
 namespace sonar_wall_hough {
     class Task : public TaskBase

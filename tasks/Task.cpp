@@ -90,7 +90,20 @@ void Task::updateHook()
     {
       hough->registerBeam(sonarBeam);
     }
-        
+    
+    //write position to output port
+    base::samples::RigidBodyState rbs_out(rbs);
+    base::Pose pose = rbs_out.getPose();
+    std::pair<double,double> xyPos = hough->getActualPosition();
+    pose.position(0,0) = xyPos.first;
+    pose.position(1,0) = xyPos.second;
+    rbs_out.setPose(pose);
+    rbs_out.time.microseconds = rbs.time.microseconds;
+    _position.write(rbs_out);
+    
+    if(!_show_debug.get())
+      return;
+    
     //save old peaks image
     if(lastPeakCount > hough->getAllPeaks()->size())
     {
@@ -102,15 +115,6 @@ void Task::updateHook()
     
     makePeaksFrame();
     makeHoughspaceFrame();
-    
-    //write position to output port
-    base::samples::RigidBodyState rbs_out(rbs);
-    base::Pose pose = rbs_out.getPose();
-    std::pair<double,double> xyPos = hough->getActualPosition();
-    pose.position(0,0) = xyPos.first;
-    pose.position(1,0) = xyPos.second;
-    rbs_out.setPose(pose);
-    _position.write(rbs_out);
 }
 
 // void Task::errorHook()
