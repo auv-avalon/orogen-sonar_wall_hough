@@ -80,13 +80,13 @@ void Task::updateHook()
     TaskBase::updateHook();
     
     base::samples::RigidBodyState rbs;
-    if(_orientation.read(rbs) == RTT::NewData)
+    if(_orientation_samples.read(rbs) == RTT::NewData)
     {
       hough->setOrientation(rbs.getYaw());
     }
     
     base::samples::SonarBeam sonarBeam;
-    if(_input.read(sonarBeam) == RTT::NewData)
+    if(_sonar_samples.read(sonarBeam) == RTT::NewData)
     {
       hough->registerBeam(sonarBeam);
     }

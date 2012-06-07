@@ -23,8 +23,8 @@ Orocos.run 'sonar_wall_hough_deployment' do
     sonar = log.task 'sonar'
     compass = log.task 'orientation_estimator'
     
-    sonar.BaseScan.connect_to hough.input
-    compass.orientation_samples.connect_to hough.orientation
+    sonar.BaseScan.connect_to hough.sonar_samples
+    compass.orientation_samples.connect_to hough.orientation_samples
     
     Vizkit.display hough
     

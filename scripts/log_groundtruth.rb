@@ -35,8 +35,8 @@ Orocos.run 'sonar_wall_hough_deployment' do
     sonar = log.task 'sonar'
     compass = log.task 'pose_estimator'
     
-    sonar.SonarScan.connect_to hough.input
-    compass.pose_samples.connect_to hough.orientation
+    sonar.SonarScan.connect_to hough.sonar_samples
+    compass.pose_samples.connect_to hough.orientation_samples
     
     Vizkit.connect_port_to 'sonar_wall_hough', 'position', :pull => false, :update_frequency => 33 do |sample, _|
         ep.updateRigidBodyState(sample)
