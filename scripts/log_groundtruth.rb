@@ -42,6 +42,7 @@ Orocos.run 'sonar_wall_hough_deployment' do
         ep.updateRigidBodyState(sample)
         sample
     end
+    Vizkit.display hough
     
     log.pose_estimator.pose_samples do |sample|
         gt.updateRigidBodyState(sample)

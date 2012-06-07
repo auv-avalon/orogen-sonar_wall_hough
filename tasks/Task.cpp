@@ -91,6 +91,9 @@ void Task::updateHook()
       hough->registerBeam(sonarBeam);
     }
     
+    //write orientation drift
+    _orientation_drift.write(hough->getOrientationDrift());
+    
     //write position to output port
     base::samples::RigidBodyState rbs_out(rbs);
     base::Pose pose = rbs_out.getPose();

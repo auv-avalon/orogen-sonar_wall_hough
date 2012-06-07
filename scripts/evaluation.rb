@@ -39,7 +39,7 @@ for pos in e
     data = Result.new
     start = pos.time unless start
 
-    next if last_sample and (pos.time - last_sample.time).abs < 5.0
+#    next if last_sample and (pos.time - last_sample.time).abs < 5.0
 
     while ptr < g.size and (pos.time - g[ptr].time).abs > 0.01
         ptr += 1
