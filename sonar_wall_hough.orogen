@@ -12,6 +12,7 @@ import_types_from "uw_localization/types/map.hpp"
 # If the component/deployments use data types that are defined in other oroGen
 # projects, these projects should be imported there as well.
 using_library "sonar_wall_hough"
+using_library "jpeg_conversion"
 
 # Declare a new task context (i.e., a component)
 #
@@ -71,6 +72,10 @@ task_context "Task" do
    output_port "position", "/base/samples/RigidBodyState"
    output_port "orientation_drift", "double"
        doc("real orientation + orientation_drift = measured orientation from orientation estimator")
+   output_port "basinWidthDiff", "double"
+   output_port "basinHeightDiff", "double"
+   output_port "meanSqError", "double"
+   output_port "supportRatio", "double"
 
    # If you want that component's updateHook() to be executed when the "input"
    # port gets data, uncomment this

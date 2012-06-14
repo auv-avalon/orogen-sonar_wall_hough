@@ -6,6 +6,7 @@
 #include "sonar_wall_hough/TaskBase.hpp"
 #include "sonar_wall_hough/Hough.hpp"
 #include "uw_localization/types/map.hpp"
+#include "jpeg_conversion/jpeg_conversion.hpp"
 
 namespace sonar_wall_hough {
     class Task : public TaskBase
@@ -13,16 +14,16 @@ namespace sonar_wall_hough {
 	friend class TaskBase;
 	
     private:
-	void makePeaksFrame();
+	void makePeaksFrame(base::samples::frame::Frame* frame, std::vector<SonarPeak>* peaks, bool clear=true);
 	void makeHoughspaceFrame();
 	void makeLinesFrame();
 	void drawLine(base::samples::frame::Frame* frame, int x0, int y0, int x1, int y1);
 	base::samples::frame::Frame* peaksFrame;
-	base::samples::frame::Frame* peaksFrameOld;
-	int lastPeakCount;
+	std::vector<SonarPeak> oldPeaks;
 	base::samples::frame::Frame* houghspaceFrame;
 	base::samples::frame::Frame* linesFrame;
 	std::vector<uw_localization::Linemark> lineMarks;
+	conversion::JpegConversion jpegConverter;
     protected:
 	sonar_wall_hough::Hough* hough;
 

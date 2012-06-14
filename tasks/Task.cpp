@@ -10,8 +10,7 @@ Task::Task(std::string const& name)
     , peaksFrame(0)
     , houghspaceFrame(0)
     , linesFrame(0)
-    , lastPeakCount(0)
-    , peaksFrameOld(0)
+    , jpegConverter(50)
 {
 }
 
@@ -21,8 +20,7 @@ Task::Task(std::string const& name, RTT::ExecutionEngine* engine)
     , peaksFrame(0)
     , houghspaceFrame(0)
     , linesFrame(0)
-    , lastPeakCount(0)
-    , peaksFrameOld(0)
+    , jpegConverter(50)
 {
 }
 
@@ -59,9 +57,8 @@ bool Task::configureHook()
     
     hough = new sonar_wall_hough::Hough(configuration);
     
-    peaksFrame = new base::samples::frame::Frame(2*configuration.maxDistance, 2*configuration.maxDistance);
-    peaksFrameOld = new base::samples::frame::Frame(2*configuration.maxDistance, 2*configuration.maxDistance);
-    linesFrame = new base::samples::frame::Frame(2*configuration.maxDistance, 2*configuration.maxDistance);
+    peaksFrame = new base::samples::frame::Frame(2*configuration.maxDistance, 2*configuration.maxDistance, 8, base::samples::frame::MODE_JPEG);
+    linesFrame = new base::samples::frame::Frame(2*configuration.maxDistance, 2*configuration.maxDistance, 8, base::samples::frame::MODE_JPEG);
     houghspaceFrame = new base::samples::frame::Frame(hough->getHoughspace()->getWidth(), hough->getHoughspace()->getHeight());
     
     return true;
@@ -104,20 +101,30 @@ void Task::updateHook()
     rbs_out.time.microseconds = rbs.time.microseconds;
     _position.write(rbs_out);
     
-    if(!_show_debug.get())
-      return;
-    
     //save old peaks image
-    if(lastPeakCount > hough->getAllPeaks()->size())
-    {
-      peaksFrameOld->image.clear();
-      peaksFrameOld->image.insert(peaksFrameOld->image.begin(), peaksFrame->image.begin(), peaksFrame->image.end());
+    if(oldPeaks.size() > hough->getAllPeaks()->size())
+    {      
+      //write out quality values
+      _basinWidthDiff.write(hough->getBasinWidthDiff());
+      _basinHeightDiff.write(hough->getBasinHeightDiff());
+      _meanSqError.write(hough->getMeanSqErr());
+      _supportRatio.write(hough->getSupportRatio());
+      
+      if(!_show_debug.get())
+	return;
+      
       makeLinesFrame();
+      _lines.write(*linesFrame);
+      _houghspace.write(*houghspaceFrame);
     }
-    lastPeakCount = hough->getAllPeaks()->size();
+    oldPeaks.clear();
+    oldPeaks.insert(oldPeaks.begin(), hough->getAllPeaks()->begin(), hough->getAllPeaks()->end());
     
-    makePeaksFrame();
     makeHoughspaceFrame();
+    /*
+    //only for real-time peak updates
+    makePeaksFrame(peaksFrame, oldPeaks);
+    */
 }
 
 // void Task::errorHook()
@@ -136,21 +143,22 @@ void Task::cleanupHook()
 
 void Task::makeHoughspaceFrame()
 {
+  houghspaceFrame->reset();
+    
   std::vector<uint8_t>::iterator imageCenterY = houghspaceFrame->image.begin() + houghspaceFrame->getHeight()/2 * houghspaceFrame->getWidth();
   for(int y = -houghspaceFrame->getHeight()/2; y <= houghspaceFrame->getHeight()/2; y++)
   {
     for(int x = 0; x < houghspaceFrame->getWidth(); x++)
     {
-      *(imageCenterY + y*houghspaceFrame->getWidth() + x) = *(hough->getHoughspace()->uncheckedAt(x,y)); 
+      *(imageCenterY + y*houghspaceFrame->getWidth() + x) = *(hough->getHoughspace()->uncheckedAt(x,y));
     }
   }
-  
-  _houghspace.write(*houghspaceFrame);
 }
 
 void Task::makeLinesFrame()
 {
-  linesFrame->reset();
+  //make clean grayscale frame
+  linesFrame->init(linesFrame->getWidth(), linesFrame->getHeight());
     
   std::vector<Line>* lines = hough->getActualLines();
   
@@ -204,10 +212,10 @@ void Task::makeLinesFrame()
   std::cout << "orientation was " << hough->getOrientation() << std::endl;
   
   //copy old peaks on linesFrame
-  for(int i = 0; i < linesFrame->image.size(); i++)
-    linesFrame->image.at(i) = std::max(linesFrame->image.at(i), peaksFrameOld->image.at(i));
+  makePeaksFrame(linesFrame, &oldPeaks, false);
   
-  _lines.write(*linesFrame);
+  //compress frame
+  jpegConverter.compress(*linesFrame, *linesFrame);
 }
 
 void Task::drawLine(base::samples::frame::Frame* frame, int x0, int y0, int x1, int y1)
@@ -221,7 +229,8 @@ void Task::drawLine(base::samples::frame::Frame* frame, int x0, int y0, int x1, 
     {
       if(x0 >= 0 && x0 < frame->getWidth() && y0 >= 0 && y0 < frame->getHeight())
       {
-	frame->image[y0 * frame->getWidth() + x0] = 255;//lines->at(i).votes;
+	//frame->image[y0 * frame->getWidth() + x0] = 255;//lines->at(i).votes;
+	frame->at<unsigned char>(x0, y0) = 255;
       }
       if (x0==x1 && y0==y1) break;
       e2 = 2*err;
@@ -230,9 +239,8 @@ void Task::drawLine(base::samples::frame::Frame* frame, int x0, int y0, int x1, 
     }
 }
 
-void Task::makePeaksFrame()
+void Task::makePeaksFrame(base::samples::frame::Frame* frame, std::vector<SonarPeak>* peaks, bool clear)
 {
-  std::vector<sonar_wall_hough::SonarPeak>* allPeaks = hough->getAllPeaks();
   /*
   //make Particles
   for(int i = 0; i < (int)allPeaks->size(); i++)
@@ -247,20 +255,27 @@ void Task::makePeaksFrame()
   _ppeaks.write(ppeaks);
   */
   //make frame
-  peaksFrame->reset();
-  for(int i = 0; i < (int)allPeaks->size(); i++)
+  if(clear)
+    frame->reset();
+  
+  for(int i = 0; i < (int)peaks->size(); i++)
   {
-    int x = peaksFrame->getWidth()/2 + allPeaks->at(i).distance * cos(allPeaks->at(i).alpha.rad);
-    int y = peaksFrame->getHeight()/2 - allPeaks->at(i).distance * sin(allPeaks->at(i).alpha.rad);
-    peaksFrame->image[y * peaksFrame->getWidth() + x] = 255;
-    //and some around there
-    if(x >= 1 && x < peaksFrame->getWidth()-1 && y >= 1 && y < peaksFrame->getHeight()-1)
+    int x = frame->getWidth()/2 + peaks->at(i).distance * cos(peaks->at(i).alpha.rad);
+    int y = frame->getHeight()/2 - peaks->at(i).distance * sin(peaks->at(i).alpha.rad);
+    
+    if(x >= 1 && x < frame->getWidth()-1 && y >= 1 && y < frame->getHeight()-1)
     {
-      peaksFrame->image[(y+0) * peaksFrame->getWidth() + x+1] = 255;
-      peaksFrame->image[(y+0) * peaksFrame->getWidth() + x-1] = 255;
-      peaksFrame->image[(y+1) * peaksFrame->getWidth() + x+0] = 255;
-      peaksFrame->image[(y-1) * peaksFrame->getWidth() + x+0] = 255;
+      //frame->image[y * frame->getWidth() + x] = 255;
+      frame->at<unsigned char>(x,y) = 255;
+      //and some around there
+      //frame->image[(y+0) * frame->getWidth() + x+1] = 255;
+      frame->at<unsigned char>(x+1,y) = 255;
+      //frame->image[(y+0) * frame->getWidth() + x-1] = 255;
+      frame->at<unsigned char>(x-1,y) = 255;
+      //frame->image[(y+1) * frame->getWidth() + x+0] = 255;
+      frame->at<unsigned char>(x,y+1) = 255;
+      //frame->image[(y-1) * frame->getWidth() + x+0] = 255;
+      frame->at<unsigned char>(x,y-1) = 255;
     }
   }
-  _peaks.write(*peaksFrame);
 }
