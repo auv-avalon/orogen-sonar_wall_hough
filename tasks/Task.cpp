@@ -99,8 +99,10 @@ void Task::updateHook()
     pose.position(1,0) = xyPos.second;
     rbs_out.setPose(pose);
     rbs_out.time.microseconds = rbs.time.microseconds;
-    _position.write(rbs_out);
-    
+ 
+    if(_continous_write.get())
+         _position.write(rbs_out);
+   
     //save old peaks image
     if(oldPeaks.size() > hough->getAllPeaks()->size())
     {      
@@ -116,6 +118,9 @@ void Task::updateHook()
       makeLinesFrame();
       _lines.write(*linesFrame);
       _houghspace.write(*houghspaceFrame);
+
+      if(!_continous_write.get())
+          _position.write(rbs_out);
     }
     oldPeaks.clear();
     oldPeaks.insert(oldPeaks.begin(), hough->getAllPeaks()->begin(), hough->getAllPeaks()->end());

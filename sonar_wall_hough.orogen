@@ -49,6 +49,8 @@ task_context "Task" do
        doc("How much do the sonar peaks accumulate the hough space")
    property("show_debug", 'bool', false).
        doc("Shows sonar peaks, houghspace and lines as debug")
+   property("continous_write", 'bool', true).
+       doc("write continously each position sample to output")
 
    # An input port, i.e. an object from which the component gets data from
    # other components' outputs
