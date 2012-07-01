@@ -7,7 +7,7 @@ g = []
 e = []
 
 
-log = Log::Replay.open("~/work/logdaten/groundtruth/pose_estimator.6.0.log", "~/work/Avalon/avalon/orogen/sonar_wall_hough/scripts/sonar_wall_hough_deployment.0.log")
+log = Log::Replay.open("~/work/logdaten/groundtruth/pose_estimator.3.0.log", "~/work/Avalon/avalon/orogen/sonar_wall_hough/scripts/sonar_wall_hough_deployment.0.log")
 
 log.pose_estimator.pose_samples do |sample|
   g << sample

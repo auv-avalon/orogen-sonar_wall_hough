@@ -6,6 +6,7 @@ Orocos.initialize
 
 #load log file 
 log = Orocos::Log::Replay.open("~/work/logdaten/groundtruth/sonar.6.0.log", "~/work/logdaten/groundtruth/pose_estimator.6.0.log")
+#log = Orocos::Log::Replay.open("~/work/logdaten/groundtruth/sonar.3.0.log", "~/work/logdaten/groundtruth/pose_estimator.3.0.log")
 
 #now you can access all logged data by 
 #addressing them by their task and port name
@@ -19,7 +20,7 @@ gt = view3d.createPlugin("RigidBodyStateVisualization")
 
 #start deployment
 Orocos.run 'sonar_wall_hough_deployment' do
-    #Orocos.log_all
+    Orocos.log_all
     
     hough = Orocos::TaskContext.get 'sonar_wall_hough'
     hough.sensorAngularResolution = 4.950773558368496
@@ -29,7 +30,7 @@ Orocos.run 'sonar_wall_hough_deployment' do
     hough.basinHeight = 10.0
     hough.basinWidth = 17.3
     hough.minLineVotesRatio = 0.2
-    hough.show_debug = true
+    hough.show_debug = false
     hough.configure
     
     sonar = log.task 'sonar'
