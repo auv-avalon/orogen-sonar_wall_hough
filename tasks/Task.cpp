@@ -112,12 +112,13 @@ void Task::updateHook()
       _meanSqError.write(hough->getMeanSqErr());
       _supportRatio.write(hough->getSupportRatio());
       
-      if(!_show_debug.get())
-	return;
-      
-      makeLinesFrame();
-      _lines.write(*linesFrame);
-      _houghspace.write(*houghspaceFrame);
+      if(_show_debug.get()) {
+          return;
+
+          makeLinesFrame();
+          _lines.write(*linesFrame);
+          _houghspace.write(*houghspaceFrame);
+      }
 
       if(!_continous_write.get())
           _position.write(rbs_out);
