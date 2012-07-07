@@ -105,7 +105,7 @@ void Task::updateHook()
    
     //save old peaks image
     if(oldPeaks.size() > hough->getAllPeaks()->size())
-    {      
+    {
       //write out quality values
       _basinWidthDiff.write(hough->getBasinWidthDiff());
       _basinHeightDiff.write(hough->getBasinHeightDiff());
@@ -113,8 +113,6 @@ void Task::updateHook()
       _supportRatio.write(hough->getSupportRatio());
       
       if(_show_debug.get()) {
-          return;
-
           makeLinesFrame();
           _lines.write(*linesFrame);
           _houghspace.write(*houghspaceFrame);
