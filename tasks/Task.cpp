@@ -165,49 +165,21 @@ void Task::makeLinesFrame()
   linesFrame->init(linesFrame->getWidth(), linesFrame->getHeight());
     
   std::vector<Line>* lines = hough->getActualLines();
-  
-  //make LineMarks
-  lineMarks.clear();
   if(lines->size() == 4)
   {
-    
-    uw_localization::Linemark lm0, lm1, lm2, lm3;
-    
     std::pair<base::Vector3d, base::Vector3d> limits0 = lines->at(0).toCartesian(lines->at(2), lines->at(3));
-    lm0.from = limits0.first;
-    lm0.to = limits0.second;
-    lm0.height = 100.0;
-    
     std::pair<base::Vector3d, base::Vector3d> limits1 = lines->at(1).toCartesian(lines->at(2), lines->at(3));
-    lm1.from = limits1.first;
-    lm1.to = limits1.second;
-    lm1.height = lm0.height;
-    
     std::pair<base::Vector3d, base::Vector3d> limits2 = lines->at(2).toCartesian(lines->at(0), lines->at(1));
-    lm2.from = limits2.first;
-    lm2.to = limits2.second;
-    lm2.height = lm0.height;
-    
     std::pair<base::Vector3d, base::Vector3d> limits3 = lines->at(3).toCartesian(lines->at(0), lines->at(1));
-    lm3.from = limits3.first;
-    lm3.to = limits3.second;
-    lm3.height = lm0.height;
-    
-    lineMarks.push_back(lm0);
-    lineMarks.push_back(lm1);
-    lineMarks.push_back(lm2);
-    lineMarks.push_back(lm3);
-    
-    //_map_wall_lines.write(lineMarks);
     
     //make frame
     int centerX = linesFrame->getWidth()/2;
     int centerY = linesFrame->getHeight()/2;
     
-    drawLine(linesFrame, centerX+lm0.from[0], centerY-lm0.from[1], centerX+lm0.to[0], centerY-lm0.to[1]);
-    drawLine(linesFrame, centerX+lm1.from[0], centerY-lm1.from[1], centerX+lm1.to[0], centerY-lm1.to[1]);
-    drawLine(linesFrame, centerX+lm2.from[0], centerY-lm2.from[1], centerX+lm2.to[0], centerY-lm2.to[1]);
-    drawLine(linesFrame, centerX+lm3.from[0], centerY-lm3.from[1], centerX+lm3.to[0], centerY-lm3.to[1]);
+    drawLine(linesFrame, centerX+limits0.first[0], centerY-limits0.first[1], centerX+limits0.second[0], centerY-limits0.second[1]);
+    drawLine(linesFrame, centerX+limits1.first[0], centerY-limits1.first[1], centerX+limits1.second[0], centerY-limits1.second[1]);
+    drawLine(linesFrame, centerX+limits2.first[0], centerY-limits2.first[1], centerX+limits2.second[0], centerY-limits2.second[1]);
+    drawLine(linesFrame, centerX+limits3.first[0], centerY-limits3.first[1], centerX+limits3.second[0], centerY-limits3.second[1]);
     
     
     //draw x and y axis
@@ -215,6 +187,7 @@ void Task::makeLinesFrame()
     //drawLine(linesFrame, centerX, centerY, centerX+30*cos(hough->getOrientation().getRad()+M_PI/2), centerY+30*sin(hough->getOrientation().getRad()+M_PI/2)); //y-axis
     std::cout << "orientation was " << hough->getOrientation() << std::endl;
   }
+  
   //copy old peaks on linesFrame
   makePeaksFrame(linesFrame, &oldPeaks, false);
   

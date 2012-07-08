@@ -5,7 +5,6 @@
 
 #include "sonar_wall_hough/TaskBase.hpp"
 #include "sonar_wall_hough/Hough.hpp"
-#include "uw_localization/types/map.hpp"
 #include "jpeg_conversion/jpeg_conversion.hpp"
 
 namespace sonar_wall_hough {
@@ -22,7 +21,6 @@ namespace sonar_wall_hough {
 	std::vector<SonarPeak> oldPeaks;
 	base::samples::frame::Frame* houghspaceFrame;
 	base::samples::frame::Frame* linesFrame;
-	std::vector<uw_localization::Linemark> lineMarks;
 	conversion::JpegConversion jpegConverter;
     protected:
 	sonar_wall_hough::Hough* hough;
