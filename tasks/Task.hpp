@@ -22,7 +22,6 @@ namespace sonar_wall_hough {
 	std::vector<SonarPeak> oldPeaks;
 	base::samples::frame::Frame* houghspaceFrame;
 	base::samples::frame::Frame* linesFrame;
-	std::vector<uw_localization::Linemark> lineMarks;
 	conversion::JpegConversion jpegConverter;
     protected:
 	sonar_wall_hough::Hough* hough;
