@@ -29,8 +29,9 @@ Orocos.run 'sonar_wall_hough_deployment' do
     hough.angleDelta = 0
     hough.basinHeight = 10.0
     hough.basinWidth = 17.3
-    hough.minLineVotesRatio = 0.2
+    hough.minLineVotesRatio = 0.1
     hough.show_debug = false
+    hough.continous_write = false
     hough.configure
     
     sonar = log.task 'sonar'

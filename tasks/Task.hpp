@@ -13,10 +13,33 @@ namespace sonar_wall_hough {
 	friend class TaskBase;
 	
     private:
+	/**
+	* This method draws the sonar peaks (points in polar coordinates) into the debug image frame
+	* @param frame the frame to be drawn in
+	* @param peaks the vector of peaks to be drawn
+	* @param clear if the frame should be cleared before drawing
+	*/
 	void makePeaksFrame(base::samples::frame::Frame* frame, std::vector<SonarPeak>* peaks, bool clear=true);
+	
+	/**
+	 * This method draws the current houghspace into the debug image frame
+	 */
 	void makeHoughspaceFrame();
+	
+	/**
+	 * This method draws the actual detected lines into the debug image frame
+	 */
 	void makeLinesFrame();
+	
+	/**
+	 * This method draws a line into an image frame
+	 * @param x0 x-coordinate of the starting point
+	 * @param y0 y-coordinate of the starting point
+	 * @param x1 x-coordinate of the end points
+	 * @param y1 y-coordinate of the end point
+	 */
 	void drawLine(base::samples::frame::Frame* frame, int x0, int y0, int x1, int y1);
+	
 	base::samples::frame::Frame* peaksFrame;
 	std::vector<SonarPeak> oldPeaks;
 	base::samples::frame::Frame* houghspaceFrame;
@@ -24,7 +47,6 @@ namespace sonar_wall_hough {
 	conversion::JpegConversion jpegConverter;
     protected:
 	sonar_wall_hough::Hough* hough;
-
 
     public:
         Task(std::string const& name = "message_producer::Task");
@@ -69,19 +91,6 @@ namespace sonar_wall_hough {
          * it again. Finally, FatalError cannot be recovered.
          */
         void updateHook();
-
-        /** This hook is called by Orocos when the component is in the
-         * RunTimeError state, at each activity step. See the discussion in
-         * updateHook() about triggering options.
-         *
-         * Call recover() to go back in the Runtime state.
-         */
-        // void errorHook();
-
-        /** This hook is called by Orocos when the state machine transitions
-         * from Running to Stopped after stop() has been called.
-         */
-        // void stopHook();
 
         /** This hook is called by Orocos when the state machine transitions
          * from Stopped to PreOperational, requiring the call to configureHook()

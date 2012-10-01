@@ -105,7 +105,7 @@ void Task::updateHook()
    
     //save old peaks image
     if(oldPeaks.size() > hough->getAllPeaks()->size())
-    {
+    {      
       //write out quality values
       _basinWidthDiff.write(hough->getBasinWidthDiff());
       _basinHeightDiff.write(hough->getBasinHeightDiff());
