@@ -52,6 +52,8 @@ bool Task::configureHook()
     configuration.minLineVotesRatio = _minLineVotesRatio.get();
     configuration.sensorAngularResolution = _sensorAngularResolution.get();
     configuration.gain = _gain.get();
+    configuration.poseCorrection=_usePositionSamples.get();
+    configuration.correctToFirstPosition = _correctToFirstPosition.get();
     
     //std::cout << "angleDelta = " << configuration.angleDelta << std::endl;
     
@@ -74,57 +76,79 @@ bool Task::startHook()
 void Task::updateHook()
 {
     //std::cout << "size= " << (hough->getAllPeaks()->size()) << std::endl;
-    TaskBase::updateHook();
+    TaskBase::updateHook();    
+    
+    
+    base::samples::SonarBeam sonarBeam;
+    while(_sonar_samples.read(sonarBeam) == RTT::NewData)
+    {	
+      
+	//std::cout << "SONAR UPDATE";
+	hough->registerBeam(sonarBeam);
+     
+      if(_usePositionSamples.get()){
+	  base::samples::RigidBodyState pose;
+	
+	if(_pose_samples.read(pose) == RTT::NewData){
+	  hough->setPosition(std::make_pair(pose.position(0,0),pose.position(1,0)));
+	}
+    }
     
     base::samples::RigidBodyState rbs;
+    
     if(_orientation_samples.read(rbs) == RTT::NewData)
     {
       hough->setOrientation(rbs.getYaw());
     }
-    
-    base::samples::SonarBeam sonarBeam;
-    if(_sonar_samples.read(sonarBeam) == RTT::NewData)
-    {
-      hough->registerBeam(sonarBeam);
-    }
-    
-    //write orientation drift
-    _orientation_drift.write(hough->getOrientationDrift());
-    
-    //write position to output port
-    base::samples::RigidBodyState rbs_out(rbs);
-    base::Pose pose = rbs_out.getPose();
-    std::pair<double,double> xyPos = hough->getActualPosition();
-    pose.position(0,0) = xyPos.first;
-    pose.position(1,0) = xyPos.second;
-    rbs_out.setPose(pose);
-    rbs_out.time.microseconds = rbs.time.microseconds;
- 
-    if(_continous_write.get())
-         _position.write(rbs_out);
-   
-    //save old peaks image
-    if(oldPeaks.size() > hough->getAllPeaks()->size())
-    {      
-      //write out quality values
-      _basinWidthDiff.write(hough->getBasinWidthDiff());
-      _basinHeightDiff.write(hough->getBasinHeightDiff());
-      _meanSqError.write(hough->getMeanSqErr());
-      _supportRatio.write(hough->getSupportRatio());
+	
       
-      if(_show_debug.get()) {
-          makeLinesFrame();
-          _lines.write(*linesFrame);
-          _houghspace.write(*houghspaceFrame);
-      }
+      //write orientation drift
+      _orientation_drift.write(hough->getOrientationDrift());
+      
+      //write position to output port
+      base::samples::RigidBodyState rbs_out(rbs);
+      base::Pose pose = rbs_out.getPose();
+      std::pair<double,double> xyPos = hough->getActualPosition();
+      pose.position(0,0) = xyPos.first;
+      pose.position(1,0) = xyPos.second;
+      rbs_out.setPose(pose);
+      rbs_out.time.microseconds = rbs.time.microseconds;
+  
+      if(_continous_write.get())
+	  _position.write(rbs_out);
+    
+      //save old peaks image
+      if(oldPeaks.size() > hough->getAllPeaks()->size())
+      {      
+	//write out quality values
+	_basinWidthDiff.write(hough->getBasinWidthDiff());
+	_basinHeightDiff.write(hough->getBasinHeightDiff());
+	_meanSqError.write(hough->getMeanSqErr());
+	_supportRatio.write(hough->getSupportRatio());
+	
+	if(_show_debug.get()) {
+	    makeLinesFrame();
+	    _lines.write(*linesFrame);
+	    _houghspace.write(*houghspaceFrame);
+	    
+	    hough->calcPositionError();
+	    std::cout << "Min Position Difference: " << hough->getMinError() << endl;
+	    std::cout << "Max Position Difference: " << hough->getMaxError() << endl;
+	    std::cout << "Average Position Difference: " << hough->getAvgError() << endl;
+	    
+	}
 
-      if(!_continous_write.get())
-          _position.write(rbs_out);
-    }
+	if(!_continous_write.get())
+	    _position.write(rbs_out);
+      }
+      
     oldPeaks.clear();
     oldPeaks.insert(oldPeaks.begin(), hough->getAllPeaks()->begin(), hough->getAllPeaks()->end());
     
     makeHoughspaceFrame();
+      
+    }
+    
     /*
     //only for real-time peak updates
     makePeaksFrame(peaksFrame, oldPeaks);

@@ -50,7 +50,11 @@ task_context "Task" do
        doc("Shows sonar peaks, houghspace and lines as debug")
    property("continous_write", 'bool', true).
        doc("write continously each position sample to output")
-
+  
+   property("usePositionSamples", 'bool', true).
+      doc("enable sensor-correction by position_samples")
+   property("correctToFirstPosition", 'bool' , true)
+      doc("transforms SonarPeaks to the first Position of Avalon. Takes only effekt, if usePositionSamples is true")
    # An input port, i.e. an object from which the component gets data from
    # other components' outputs
    #
@@ -58,8 +62,13 @@ task_context "Task" do
    # was available, and false otherwise. _input.connected() returns if this
    # input is connected to an output or not.
    input_port "sonar_samples", "/base/samples/SonarBeam"
+      doc("sonar beams to detect walls")
    input_port "reset", "bool"
+      doc(" ")
    input_port "orientation_samples", "/base/samples/RigidBodyState"
+      doc("orientation of avalon to correct the angle of sonar peaks")   
+   input_port "pose_samples", "base/samples/RigidBodyState"
+      doc("position sample for sonar-correction")
 
    # An output port, i.e. an object to which the component pushes data so that
    # it is transmitted to other components' inputs
