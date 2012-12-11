@@ -133,9 +133,9 @@ void Task::updateHook()
 	    _houghspace.write(*houghspaceFrame);
 	    
 	    hough->calcPositionError();
-	    std::cout << "Min Position Difference: " << hough->getMinError() << endl;
-	    std::cout << "Max Position Difference: " << hough->getMaxError() << endl;
-	    std::cout << "Average Position Difference: " << hough->getAvgError() << endl;
+	    std::cout << "Min Position Difference: " << hough->getMinError() << std:::endl;
+	    std::cout << "Max Position Difference: " << hough->getMaxError() << std::endl;
+	    std::cout << "Average Position Difference: " << hough->getAvgError() << std::endl;
 	    
 	}
 
