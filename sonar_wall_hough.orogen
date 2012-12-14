@@ -55,6 +55,8 @@ task_context "Task" do
       doc("enable sensor-correction by position_samples")
    property("correctToFirstPosition", 'bool' , true)
       doc("transforms SonarPeaks to the first Position of Avalon. Takes only effekt, if usePositionSamples is true")
+   property("avalonSonarPose", 'double' ,  0.5).
+      doc("Position of the sonar at Avalon, given as the relative x-Position to the origin of Avalon")
    # An input port, i.e. an object from which the component gets data from
    # other components' outputs
    #
