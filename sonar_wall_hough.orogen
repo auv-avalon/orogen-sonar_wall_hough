@@ -24,6 +24,8 @@ task_context "Task" do
 
    property("sensorAngularResolution", 'double', 1.8).
        doc("Angular resolution of sonar (in degree)")
+   property("sensorAngularTolerance", 'double', 15).
+	doc("Angular tolerance of linedetection")
    property("anglesPerBin", 'int', 2).
        doc("Number of Angle steps collected in 1 bin in houghspace")
    property("maxDistance", 'int', 600). #600 for sauc-e logs

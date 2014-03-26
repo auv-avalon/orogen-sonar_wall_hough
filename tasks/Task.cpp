@@ -52,10 +52,12 @@ bool Task::configureHook()
     configuration.minDistance = _minDistance.get();
     configuration.minLineVotesRatio = _minLineVotesRatio.get();
     configuration.sensorAngularResolution = _sensorAngularResolution.get();
+    configuration.sensorAngularTolerance = _sensorAngularTolerance.get();
     configuration.gain = _gain.get();
     configuration.poseCorrection=_usePositionSamples.get();
     configuration.correctToFirstPosition = _correctToFirstPosition.get();
     configuration.avalonSonarPose = _avalonSonarPose.get();
+    configuration.debug = _show_debug.get();
     
     //std::cout << "angleDelta = " << configuration.angleDelta << std::endl;
     
@@ -115,6 +117,7 @@ void Task::updateHook()
       pose.position(1,0) = xyPos.second;
       rbs_out.setPose(pose);
       rbs_out.time.microseconds = rbs.time.microseconds;
+      rbs_out.cov_position = base::Matrix3d::Identity();
   
       if(_continous_write.get())
 	  _position.write(rbs_out);
@@ -133,13 +136,14 @@ void Task::updateHook()
 	    _lines.write(*linesFrame);
 	    _houghspace.write(*houghspaceFrame);
 	    
-	    /*
+	    
 	    hough->calcPositionError();
 	    
 	    std::cout << "Min Position Difference: " << hough->getMinError() << std::endl;
 	    std::cout << "Max Position Difference: " << hough->getMaxError() << std::endl;
 	    std::cout << "Average Position Difference: " << hough->getAvgError() << std::endl;
-	    */
+	    std::cout << "Standard Deviation: " << hough->getStandardDeviation() << std::endl;
+	    
 	}
 
 	if(!_continous_write.get())
@@ -262,7 +266,7 @@ void Task::makePeaksFrame(base::samples::frame::Frame* frame, std::vector<SonarP
   //make frame
   if(clear)
     frame->reset();
-  
+  std::cout << "Peakes: " << peaks->size() << std::endl;
   for(int i = 0; i < (int)peaks->size(); i++)
   {
     int x = frame->getWidth()/2 + peaks->at(i).distance * cos(peaks->at(i).alpha.rad);
