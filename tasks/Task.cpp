@@ -117,9 +117,9 @@ void Task::updateHook()
       pose.position(1,0) = xyPos.second;
       rbs_out.setPose(pose);
       rbs_out.time.microseconds = rbs.time.microseconds;
-      rbs_out.cov_position = base::Matrix3d::Identity();
-  
-      if(_continous_write.get())
+     rbs_out.cov_position = base::Matrix3d::Identity();  
+
+     if(_continous_write.get())
 	  _position.write(rbs_out);
     
       //save old peaks image
