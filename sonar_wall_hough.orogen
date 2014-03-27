@@ -65,14 +65,17 @@ task_context "Task" do
    # Data can be retrieved using _input.read(value), which returns true if data
    # was available, and false otherwise. _input.connected() returns if this
    # input is connected to an output or not.
-   input_port "sonar_samples", "/base/samples/SonarBeam"
-      doc("sonar beams to detect walls")
-   input_port "reset", "bool"
+   input_port("sonar_samples", "/base/samples/SonarBeam").
+      doc("sonar beams to detect walls").
+      needs_reliable_connection
+   input_port("reset", "bool").
       doc(" ")
-   input_port "orientation_samples", "/base/samples/RigidBodyState"
-      doc("orientation of avalon to correct the angle of sonar peaks")   
-   input_port "pose_samples", "base/samples/RigidBodyState"
-      doc("position sample for sonar-correction")
+   input_port("orientation_samples", "/base/samples/RigidBodyState").
+      doc("orientation of avalon to correct the angle of sonar peaks"). 
+      needs_reliable_connection
+   input_port("pose_samples", "base/samples/RigidBodyState").
+      doc("position sample for sonar-correction").
+      needs_reliable_connection
 
    # An output port, i.e. an object to which the component pushes data so that
    # it is transmitted to other components' inputs
