@@ -87,20 +87,20 @@ void Task::updateHook()
     while(_sonar_samples.read(sonarBeam) == RTT::NewData)
     {	
       
-	//std::cout << "SONAR UPDATE";
-	hough->registerBeam(sonarBeam);
-     
-      if(_usePositionSamples.get()){
-	  base::samples::RigidBodyState pose;
-	
-	if(_pose_samples.read(pose) == RTT::NewData){
-	  hough->setPosition(std::make_pair(pose.position(0,0),pose.position(1,0)));
-	}
-    }
+          //std::cout << "SONAR UPDATE";
+        hough->registerBeam(sonarBeam);
+      
+        if(_usePositionSamples.get()){
+            base::samples::RigidBodyState pose;
+          
+          while(_pose_samples.read(pose) == RTT::NewData){
+            hough->setPosition(std::make_pair(pose.position(0,0),pose.position(1,0)));
+          }
+        }
     
     base::samples::RigidBodyState rbs;
     
-    if(_orientation_samples.read(rbs) == RTT::NewData)
+    while(_orientation_samples.read(rbs) == RTT::NewData)
     {
       hough->setOrientation(rbs.getYaw());
     }
@@ -146,8 +146,11 @@ void Task::updateHook()
 	    
 	}
 
-	if(!_continous_write.get())
-	    _position.write(rbs_out);
+	if(!_continous_write.get()){
+	  rbs_out.time = base::Time::now(); 
+          _position.write(rbs_out);
+            
+        }
       }
       
     oldPeaks.clear();
