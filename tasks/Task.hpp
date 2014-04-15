@@ -45,6 +45,7 @@ namespace sonar_wall_hough {
 	base::samples::frame::Frame* houghspaceFrame;
 	base::samples::frame::Frame* linesFrame;
 	conversion::JpegConversion jpegConverter;
+        base::Time lastPerception;
 	
     protected:
 	sonar_wall_hough::Hough* hough;

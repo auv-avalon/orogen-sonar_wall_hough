@@ -86,6 +86,9 @@ void Task::updateHook()
     base::samples::SonarBeam sonarBeam;
     while(_sonar_samples.read(sonarBeam) == RTT::NewData)
     {	
+        
+        if(sonarBeam.time.toSeconds() > lastPerception.toSeconds())
+          lastPerception = sonarBeam.time;
       
           //std::cout << "SONAR UPDATE";
         hough->registerBeam(sonarBeam);
@@ -103,6 +106,10 @@ void Task::updateHook()
     while(_orientation_samples.read(rbs) == RTT::NewData)
     {
       hough->setOrientation(rbs.getYaw());
+      
+      if(rbs.time.toSeconds() > lastPerception.toSeconds())
+        lastPerception = rbs.time;
+      
     }
 	
       
@@ -147,8 +154,11 @@ void Task::updateHook()
 	}
 
 	if(!_continous_write.get()){
-	  rbs_out.time = base::Time::now(); 
-          _position.write(rbs_out);
+            std::vector<Line>* lines = hough->getActualLines();
+            if(lines->size() == 4){
+              rbs_out.time = lastPerception;
+              _position.write(rbs_out);
+            }
             
         }
       }
