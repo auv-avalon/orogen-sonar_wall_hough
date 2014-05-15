@@ -111,11 +111,8 @@ void Task::updateHook()
         lastPerception = rbs.time;
       
     }
-	
-      
-      //write orientation drift
-      _orientation_drift.write(hough->getOrientationDrift());
-      
+	      
+     
       //write position to output port
       base::samples::RigidBodyState rbs_out(rbs);
       base::Pose pose = rbs_out.getPose();
@@ -133,10 +130,15 @@ void Task::updateHook()
       if(oldPeaks.size() > hough->getAllPeaks()->size())
       {      
 	//write out quality values
-	_basinWidthDiff.write(hough->getBasinWidthDiff());
-	_basinHeightDiff.write(hough->getBasinHeightDiff());
-	_meanSqError.write(hough->getMeanSqErr());
-	_supportRatio.write(hough->getSupportRatio());
+        
+        PositionQuality pq;
+        pq.time = rbs_out.time;
+        pq.orientation_drift = hough->getOrientationDrift();
+        pq.basin_width_diff = hough->getBasinWidthDiff();
+        pq.basin_height_diff = hough->getBasinHeightDiff();
+        pq.mean_sq_error = hough->getMeanSqErr();
+        pq.support_ratio = hough->getSupportRatio();
+        _position_quality.write(pq);        
 	
 	if(_show_debug.get()) {
 	    makeLinesFrame();

@@ -5,6 +5,7 @@ name "sonar_wall_hough"
 # If new data types need to be defined, they have to be put in a separate C++
 # header, and this header will be loaded here
 # import_types_from "sonar_wall_houghType.hpp"
+import_types_from "tasks/DebugTypes.hpp"
 import_types_from "base"
 import_types_from "sonar_wall_hough/Config.hpp"
 
@@ -87,12 +88,7 @@ task_context "Task" do
    output_port "peaks", "/base/samples/frame/Frame"
    output_port "houghspace", "/base/samples/frame/Frame"
    output_port "position", "/base/samples/RigidBodyState"
-   output_port "orientation_drift", "double"
-       doc("real orientation + orientation_drift = measured orientation from orientation estimator")
-   output_port "basinWidthDiff", "double"
-   output_port "basinHeightDiff", "double"
-   output_port "meanSqError", "double"
-   output_port "supportRatio", "double"
+   output_port "position_quality", "/sonar_wall_hough/PositionQuality"
 
    # If you want that component's updateHook() to be executed when the "input"
    # port gets data, uncomment this

@@ -6,6 +6,7 @@
 #include "sonar_wall_hough/TaskBase.hpp"
 #include "sonar_wall_hough/Hough.hpp"
 #include "jpeg_conversion/jpeg_conversion.hpp"
+#include <tasks/DebugTypes.hpp>
 
 namespace sonar_wall_hough {
     class Task : public TaskBase
