@@ -58,6 +58,7 @@ bool Task::configureHook()
     configuration.correctToFirstPosition = _correctToFirstPosition.get();
     configuration.avalonSonarPose = _avalonSonarPose.get();
     configuration.debug = _show_debug.get();
+    configuration.ignoreOrientation = _ignoreOrientation.get();
     
     //std::cout << "angleDelta = " << configuration.angleDelta << std::endl;
     

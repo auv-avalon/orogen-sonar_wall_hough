@@ -60,6 +60,9 @@ task_context "Task" do
       doc("transforms SonarPeaks to the first Position of Avalon. Takes only effekt, if usePositionSamples is true")
    property("avalonSonarPose", 'double' ,  0.5).
       doc("Position of the sonar at Avalon, given as the relative x-Position to the origin of Avalon")
+   property("ignoreOrientation", 'bool', false).
+      doc("Ignore the vehicle orientation in the line selection algorithm")
+      
    # An input port, i.e. an object from which the component gets data from
    # other components' outputs
    #
