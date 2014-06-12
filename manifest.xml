@@ -15,5 +15,5 @@
   -->
   <depend package="base/types" />
   <depend package="image_processing/jpeg_conversion" />
-  <depend package="avalon/sonar_wall_hough" />
+  <depend package="auv_avalon/sonar_wall_hough" />
 </package>
