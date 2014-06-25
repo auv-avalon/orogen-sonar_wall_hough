@@ -114,16 +114,16 @@ void Task::updateHook()
     }
 	      
      
-      //write position to output port
-      base::samples::RigidBodyState rbs_out(rbs);
-      base::Pose pose = rbs_out.getPose();
-      std::pair<double,double> xyPos = hough->getActualPosition();
-      pose.position(0,0) = xyPos.first;
-      pose.position(1,0) = xyPos.second;
-      rbs_out.setPose(pose);
-      rbs_out.time.microseconds = rbs.time.microseconds;
-     rbs_out.cov_position = base::Matrix3d::Identity();  
-
+        //write position to output port
+        base::samples::RigidBodyState rbs_out(rbs);
+        base::Pose pose = rbs_out.getPose();
+        std::pair<double,double> xyPos = hough->getActualPosition();
+        pose.position(0,0) = xyPos.first;
+        pose.position(1,0) = xyPos.second;
+        rbs_out.setPose(pose);
+        rbs_out.time.microseconds = rbs.time.microseconds;
+        rbs_out.cov_position = base::Matrix3d::Identity() * _pos_covar.get();  
+  
      if(_continous_write.get())
 	  _position.write(rbs_out);
     

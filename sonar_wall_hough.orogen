@@ -62,6 +62,8 @@ task_context "Task" do
       doc("Position of the sonar at Avalon, given as the relative x-Position to the origin of Avalon")
    property("ignoreOrientation", 'bool', false).
       doc("Ignore the vehicle orientation in the line selection algorithm")
+   property("pos_covar", "double", 0.1).
+      doc("Covariance of the estimated position") 
       
    # An input port, i.e. an object from which the component gets data from
    # other components' outputs
