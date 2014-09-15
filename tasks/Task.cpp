@@ -13,6 +13,9 @@ Task::Task(std::string const& name)
     , linesFrame(0)
     , jpegConverter(50)
 {
+  
+  base::Vector3d v = base::Vector3d::Zero();
+  _origin_translation.set(v);
 }
 
 Task::Task(std::string const& name, RTT::ExecutionEngine* engine)
@@ -23,6 +26,10 @@ Task::Task(std::string const& name, RTT::ExecutionEngine* engine)
     , linesFrame(0)
     , jpegConverter(50)
 {
+
+  base::Vector3d v = base::Vector3d::Zero();
+  _origin_translation.set(v);  
+  
 }
 
 Task::~Task()
@@ -120,6 +127,7 @@ void Task::updateHook()
         std::pair<double,double> xyPos = hough->getActualPosition();
         pose.position(0,0) = xyPos.first;
         pose.position(1,0) = xyPos.second;
+        pose.position += _origin_translation.get();
         rbs_out.setPose(pose);
         rbs_out.time.microseconds = rbs.time.microseconds;
         rbs_out.cov_position = base::Matrix3d::Identity() * _pos_covar.get();  

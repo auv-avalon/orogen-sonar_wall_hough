@@ -63,7 +63,11 @@ task_context "Task" do
    property("ignoreOrientation", 'bool', false).
       doc("Ignore the vehicle orientation in the line selection algorithm")
    property("pos_covar", "double", 0.1).
-      doc("Covariance of the estimated position") 
+      doc("Covariance of the estimated position")
+   property("origin_translation", "base/Vector3d").
+      doc("Translate the origin (center of the basin) to a offset")
+      
+      
       
    # An input port, i.e. an object from which the component gets data from
    # other components' outputs
